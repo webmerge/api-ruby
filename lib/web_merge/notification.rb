@@ -1,6 +1,6 @@
 module WebMerge
   class Notification
-    include ActiveModel::Validations
+    include ::ActiveModel::Validations
 
     attr_accessor :to, :from, :subject, :html, :security, :password
 

@@ -1,6 +1,6 @@
 module WebMerge
   class Document
-    include ActiveModel::Validations
+    include ::ActiveModel::Validations
 
     attr_accessor :name, :type, :output, :output_name, :size_width, :size_height, :notification, :file_path
     attr_reader :id, :key, :size, :active, :url

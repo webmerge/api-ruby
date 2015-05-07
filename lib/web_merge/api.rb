@@ -1,6 +1,12 @@
 module WebMerge
-  module API
-    module_function
+  class API
+
+    def initialize(options={})
+      @api_secret = options[:secret] || ENV['WEB_MERGE_API_SECRET']
+      @api_key = options[:key] || ENV['WEB_MERGE_API_KEY']
+      @force_test_mode = options[:force_test_mode] || ENV['WEB_MERGE_FORCE_TEST_MODE']
+      @verbose = options[:verbose] || false
+    end
 
     #
     # DOCUMENTS
@@ -87,7 +93,7 @@ module WebMerge
       Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
         action_klass = "Net::HTTP::#{verb.camelize}".constantize
         request = action_klass.new(uri.request_uri)
-        request.basic_auth(WebMerge::Constants::API_KEY, WebMerge::Constants::API_SECRET)
+        request.basic_auth(@api_key, @api_secret)
         request.set_form_data(form_data) if form_data.present?
         http.request(request) do |response|
           if block_given?
@@ -97,6 +103,7 @@ module WebMerge
               parsed_response_body = JSON.parse(response.body)
             rescue
               parsed_response_body = "Unable to parse response body as JSON perhaps you'd like to pass a block to process the response?"
+              parsed_response_body << "#{response.body}"
             end
           end
         end
@@ -109,7 +116,7 @@ module WebMerge
     end
 
     def test(options)
-      true?(WebMerge::Constants::FORCE_TEST_MODE) || (options[:test] && true?(options[:test])) ? 1 : 0
+      true?(@force_test_mode) || (options[:test] && true?(options[:test])) ? 1 : 0
     end
 
     def true?(value)
