@@ -10,7 +10,8 @@ module WebMerge
     validates :type, inclusion: { in: WebMerge::Constants::SUPPORTED_TYPES }
     validates :output, inclusion: { in: WebMerge::Constants::SUPPORTED_OUTPUTS }
 
-    def initialize(name: required(:name), type: required(:type), output: WebMerge::Constants::PDF, file_path: nil, options: {})
+    def initialize(client: required(:client), name: required(:name), type: required(:type), output: WebMerge::Constants::PDF, file_path: nil, options: {})
+      @client = client
       @name = name
       @type = type
       @output = output
@@ -33,7 +34,7 @@ module WebMerge
     end
 
     def self.all
-      WebMerge::API.get_documents.map do |doc_hash|
+      @client.get_documents.map do |doc_hash|
         instance = empty_instance
         instance.send(:update_instance, doc_hash)
         instance
@@ -51,9 +52,9 @@ module WebMerge
     def save
       return false unless valid?
       response = if new_document?
-        WebMerge::API.create_document(as_form_data)
+        @client.create_document(as_form_data)
       else
-        WebMerge::API.update_document(id, as_form_data)
+        @client.update_document(id, as_form_data)
       end
       update_instance(response.symbolize_keys)
       true
@@ -65,20 +66,20 @@ module WebMerge
 
     def reload
       raise "Cannot reload a new document, perhaps you'd like to call `save' first?" if new_document?
-      response = WebMerge::API.get_document(id)
+      response = @client.get_document(id)
       update_instance(response)
       self
     end
 
     def delete
       delete = false
-      WebMerge::API.delete_document(id) { |response| delete = JSON(response.body)["success"] } unless new_document?
+      @client.delete_document(id) { |response| delete = JSON(response.body)["success"] } unless new_document?
       delete
     end
 
     def fields
       raise "Cannot fetch fields for an unpersisted document, perhaps you'd like to call `save' first?" if new_document?
-      @fields ||= WebMerge::API.get_document_fields(id)
+      @fields ||= @client.get_document_fields(id)
     end
 
     def field_names
@@ -87,7 +88,7 @@ module WebMerge
 
     def merge(field_mappings, options = {}, &block)
       raise "Cannot merge an unpersisted document, perhaps you'd like to call `save' first?" if new_document?
-      WebMerge::API.merge_document(id, key, field_mappings, options, &block)
+      @client.merge_document(id, key, field_mappings, options, &block)
     end
 
     def as_form_data
