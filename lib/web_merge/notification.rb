@@ -5,7 +5,7 @@ module WebMerge
     attr_accessor :to, :from, :subject, :html, :security, :password
 
     validates_presence_of :to, :from
-    validates_format_of :to, :from, :with => /^(|(([A-Za-z0-9]+_+)|([A-Za-z0-9]+\-+)|([A-Za-z0-9]+\.+)|([A-Za-z0-9]+\++))*[A-Za-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-zA-Z]{2,6})$/i
+    validates_format_of :to, :from, :with => /\A(|(([A-Za-z0-9]+_+)|([A-Za-z0-9]+\-+)|([A-Za-z0-9]+\.+)|([A-Za-z0-9]+\++))*[A-Za-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-zA-Z]{2,6})\z/i
     validates_presence_of :password, if: :requires_password?
     validates :security, inclusion: { in: WebMerge::Constants::SECURITY_LEVELS }
 
