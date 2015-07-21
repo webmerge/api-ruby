@@ -46,9 +46,15 @@ module WebMerge
     #   default: false.
     # options[:download] Will return the merged document in response
     #   default: false
+    # options[:flatten] Will return the merged document flattened (with no editing capabilities)
+    #   default: 0
     #
     def merge_document(doc_id, doc_key, field_mappings, options = {}, &block)
-      post("#{WebMerge::Constants::MERGE_ENDPOINT}/#{doc_id}/#{doc_key}?download=#{download(options)}&test=#{test(options)}", field_mappings, &block)
+      query = ""
+      if options.present?
+        query = "?" + URI.encode(options.map{|k,v| "#{k}=#{v}"}.join("&"))
+      end
+      post("#{WebMerge::Constants::MERGE_ENDPOINT}/#{doc_id}/#{doc_key}#{query}", field_mappings, &block)
     end
 
     #
