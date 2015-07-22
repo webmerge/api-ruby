@@ -2,11 +2,11 @@ module WebMerge
   class Document
     include ::ActiveModel::Validations
 
-    attr_accessor :name, :type, :output, :output_name, :size_width, :size_height, :notification, :file_path
+    attr_accessor :name, :type, :flatten, :output, :output_name, :size_width, :size_height, :notification, :file_path
     attr_reader :id, :key, :size, :active, :url
 
     validates_presence_of :name, :type, :output
-    validates_presence_of :file_path
+    validates_presence_of :file_path, :on => :create
     validates :type, inclusion: { in: WebMerge::Constants::SUPPORTED_TYPES }
     validates :output, inclusion: { in: WebMerge::Constants::SUPPORTED_OUTPUTS }
 
@@ -97,11 +97,14 @@ module WebMerge
         type: type,
         output: output
       }
+
+      request_params["settings[flatten]"] = flatten if flatten
+
       [:output_name, :size_width, :size_height].each do |key|
         value = send(key)
         request_params.merge!(key => value) if value.present?
       end
-      merge_file_contents!(request_params)
+      merge_file_contents!(request_params) if file_path.present?
       merge_notification!(request_params) if notification.present?
       request_params
     end
