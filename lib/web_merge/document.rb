@@ -21,8 +21,8 @@ module WebMerge
       @size_height = options[:size_height]
     end
 
-    def self.find(doc_id)
-      instance = empty_instance
+    def self.find(doc_id, client: required(:client))
+      instance = empty_instance(client)
       instance.send(:id=, doc_id)
       instance.reload
     end
@@ -33,9 +33,9 @@ module WebMerge
       end
     end
 
-    def self.all
-      @client.get_documents.map do |doc_hash|
-        instance = empty_instance
+    def self.all(client: required(:client))
+      client.get_documents.map do |doc_hash|
+        instance = empty_instance(client)
         instance.send(:update_instance, doc_hash)
         instance
       end
@@ -112,8 +112,8 @@ module WebMerge
     private
     attr_writer :id, :key, :size, :active, :url
 
-    def self.empty_instance
-      new(name: "", type: "", output: "")
+    def self.empty_instance(client)
+      new(client: client, name: "", type: "", output: "")
     end
 
     def update_instance(response)
