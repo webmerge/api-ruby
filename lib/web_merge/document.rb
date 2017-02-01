@@ -1,4 +1,7 @@
+
 module WebMerge
+  class DocumentError < RuntimeError; end;
+
   class Document
     include ::ActiveModel::Validations
 
@@ -56,6 +59,8 @@ module WebMerge
       else
         @client.update_document(id, as_form_data)
       end
+      raise WebMerge::DocumentError.new(response['error']) if response['error'].present?
+
       update_instance(response.symbolize_keys)
       true
     end
