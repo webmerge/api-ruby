@@ -35,6 +35,10 @@ module WebMerge
       get("#{WebMerge::Constants::DOCUMENTS}/#{doc_id}/fields", &block)
     end
 
+    def get_document_file(doc_id, &block)
+      get("#{WebMerge::Constants::DOCUMENTS}/#{doc_id}/file", &block)
+    end
+
     # doc_id	The Document ID
     #   example: 436346
     # doc_key	The Document Key
