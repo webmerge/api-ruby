@@ -108,5 +108,17 @@ describe WebMerge::Document do
         expect { document_with_merge_field_errors.save! }.to raise_error(WebMerge::DocumentError)
       end
     end
+
+    context 'document is invalid' do
+      let(:document) do
+        described_class.new(client: client, name: 'foo', type: 'docx')
+      end
+      let(:response) { 'N/A' }
+
+      it 'raises an error upon document save error' do
+        expect(document).to receive(:valid?).and_return(false)
+        expect { document.save! }.to raise_error(WebMerge::DocumentError)
+      end
+    end
   end
 end
