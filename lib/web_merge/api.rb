@@ -102,9 +102,9 @@ module WebMerge
       uri = URI.parse(url_string)
       Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
         action_klass = "Net::HTTP::#{verb.camelize}".constantize
-        request = action_klass.new(uri.request_uri)
+        request = action_klass.new(uri.request_uri, 'Content-Type' => 'application/json')
         request.basic_auth(@api_key, @api_secret)
-        request.set_form_data(form_data) if form_data.present?
+        request.body = form_data.to_json if form_data.present?
         http.request(request) do |response|
           if block_given?
             return block.call(response)
