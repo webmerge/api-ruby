@@ -1,3 +1,11 @@
+## 1.0.3
+
+* Increased test coverage.
+* Added support for more document types.
+* Added support for the document file API endpoint.
+* Added support for JSON payload.
+* Raises an error if a document didn't save on WebMerge.
+
 ## 1.0.2
 
 * Update regex for single line match.
