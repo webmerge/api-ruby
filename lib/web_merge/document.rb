@@ -133,7 +133,7 @@ module WebMerge
 
     def merge_file_contents!(request_params)
       if file_path_is_url?
-        request_params.merge(file_url: file_path)
+        request_params.merge!(file_url: file_path)
       elsif html?
         html_string = IO.binread(file_path)
         request_params.merge!(html: html_string)
