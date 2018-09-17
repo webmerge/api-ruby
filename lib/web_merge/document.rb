@@ -48,6 +48,10 @@ module WebMerge
       type == WebMerge::Constants::HTML
     end
 
+    def file_path_is_url?
+      file_path.match(/^http[s*]:\/\//)
+    end
+
     def new_document?
       id.blank?
     end
@@ -128,7 +132,9 @@ module WebMerge
     end
 
     def merge_file_contents!(request_params)
-      if html?
+      if file_path_is_url?
+        request_params.merge(file_url: file_path)
+      elsif html?
         html_string = IO.binread(file_path)
         request_params.merge!(html: html_string)
       else
