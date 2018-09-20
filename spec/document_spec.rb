@@ -36,20 +36,20 @@ describe WebMerge::Document do
     context 'document is valid' do
       let(:response) do
         {
-          "id":"234543",
-          "key":"firm3",
-          "type":"html",
-          "name":"1040 EZ",
-          "output":"pdf",
-          "size":"",
-          "size_width":"8.5",
-          "size_height":"11",
-          "active":"1",
-          "url":"https://www.webmerge.me/merge/234543/firm3",
-          "fields":[
-            {"key":"aflekjf409t3j4mg30m409m", "name":"FirstName"},
-            {"key":"3to3igj3g3gt94j9304jfqw", "name":"LastName"},
-            {"key":"t43j0grjaslkfje304vj9we", "name":"Email"}
+          "id" => "234543",
+          "key" => "firm3",
+          "type" => "html",
+          "name" => "1040 EZ",
+          "output" => "pdf",
+          "size" => "",
+          "size_width" => "8.5",
+          "size_height" => "11",
+          "active" => "1",
+          "url" => "https://www.webmerge.me/merge/234543/firm3",
+          "fields" => [
+            {"key" => "aflekjf409t3j4mg30m409m", "name" => "FirstName"},
+            {"key" => "3to3igj3g3gt94j9304jfqw", "name" => "LastName"},
+            {"key" => "t43j0grjaslkfje304vj9we", "name" => "Email"}
           ]
         }
       end
@@ -69,20 +69,20 @@ describe WebMerge::Document do
     context 'document is valid' do
       let(:response) do
         {
-          "id":"234543",
-          "key":"firm3",
-          "type":"html",
-          "name":"1040 EZ",
-          "output":"pdf",
-          "size":"",
-          "size_width":"8.5",
-          "size_height":"11",
-          "active":"1",
-          "url":"https://www.webmerge.me/merge/234543/firm3",
-          "fields":[
-            {"key":"aflekjf409t3j4mg30m409m", "name":"FirstName"},
-            {"key":"3to3igj3g3gt94j9304jfqw", "name":"LastName"},
-            {"key":"t43j0grjaslkfje304vj9we", "name":"Email"}
+          "id" => "234543",
+          "key" => "firm3",
+          "type" => "html",
+          "name" => "1040 EZ",
+          "output" => "pdf",
+          "size" => "",
+          "size_width" => "8.5",
+          "size_height" => "11",
+          "active" => "1",
+          "url" => "https://www.webmerge.me/merge/234543/firm3",
+          "fields" => [
+            {"key" => "aflekjf409t3j4mg30m409m", "name" => "FirstName"},
+            {"key" => "3to3igj3g3gt94j9304jfqw", "name" => "LastName"},
+            {"key" => "t43j0grjaslkfje304vj9we", "name" => "Email"}
           ]
         }
       end
