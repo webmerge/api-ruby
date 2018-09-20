@@ -96,7 +96,7 @@ module WebMerge
     end
 
     def create_webhook(callback_url: require(:callback_url), options: {})
-      create_delivery({ type: "webhook", settings: options.merge(url: callback_url)})
+      create_delivery(delivery_options: { type: "webhook", settings: options.merge(url: callback_url)})
     end
 
     def fields
