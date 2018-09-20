@@ -86,6 +86,19 @@ module WebMerge
       delete
     end
 
+    def deliveries
+      @deliveries ||= get_document_deliveries(id)
+    end
+
+    def create_delivery(delivery_options: require(:delivery_options))
+      response = @client.create_document_delivery(id, delivery_options)
+      raise WebMerge::DocumentError.new(response['error']) if response['error'].present?
+    end
+
+    def create_webhook(callback_url: require(:callback_url), options: {})
+      create_delivery({ type: "webhook", settings: options.merge(url: callback_url)})
+    end
+
     def fields
       raise "Cannot fetch fields for an unpersisted document, perhaps you'd like to call `save' first?" if new_document?
       @fields ||= @client.get_document_fields(id)
