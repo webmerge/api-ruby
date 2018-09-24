@@ -13,7 +13,7 @@ module WebMerge
     validates :type, inclusion: { in: WebMerge::Constants::SUPPORTED_TYPES }
     validates :output, inclusion: { in: WebMerge::Constants::SUPPORTED_OUTPUTS }
 
-    def initialize(client: required(:client), name: required(:name), type: required(:type), output: WebMerge::Constants::PDF, file_path: nil, options: {})
+    def initialize(client:, name:, type:, output: WebMerge::Constants::PDF, file_path: nil, options: {})
       @client = client
       @name = name
       @type = type
@@ -24,7 +24,7 @@ module WebMerge
       @size_height = options[:size_height]
     end
 
-    def self.find(doc_id, client: required(:client))
+    def self.find(doc_id, client:)
       instance = empty_instance(client)
       instance.send(:id=, doc_id)
       instance.reload
@@ -36,7 +36,7 @@ module WebMerge
       end
     end
 
-    def self.all(client: required(:client))
+    def self.all(client:)
       client.get_documents.map do |doc_hash|
         instance = empty_instance(client)
         instance.send(:update_instance, doc_hash)
