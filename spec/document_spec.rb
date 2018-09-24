@@ -32,7 +32,6 @@ describe WebMerge::Document do
   end
 
   describe '#save' do
-    let(:client) { double(:client, create_document: response ) }
     context 'document is valid' do
       let(:response) do
         {
@@ -54,12 +53,28 @@ describe WebMerge::Document do
         }
       end
 
-      let(:valid_document) do
-        described_class.new(client: client, name: 'foo', type: 'docx')
+      context 'and the document is new' do
+        let(:valid_document) do
+          described_class.new(client: client, name: 'foo', type: 'docx')
+        end
+        let(:client) { double(:client, create_document: response ) }
+
+        it 'returns true' do
+          expect(valid_document.save).to eq(true)
+        end
       end
 
-      it 'returns true' do
-        expect(valid_document.save).to eq(true)
+      context "and the document is not new" do
+        let(:client) { double(:client, update_document: response ) }
+        let(:valid_document) do
+          described_class.new(client: client, name: 'foo', type: 'docx').tap do |document|
+            document.send(:id=, rand(1..10))
+          end
+        end
+
+        it 'returns true' do
+          expect(valid_document.save).to eq(true)
+        end
       end
     end
   end
@@ -107,6 +122,57 @@ describe WebMerge::Document do
       it 'raises an error upon document save error' do
         expect { document_with_merge_field_errors.save! }.to raise_error(WebMerge::DocumentError)
       end
+    end
+  end
+
+  describe '#create_delivery' do
+    let(:client) { double(:client, create_document_delivery: response) }
+    let(:delivery_options) { { type: "webhook", "url" => "http://example.com/callbacks", "file_url" => 1, "json" => 1 } }
+    let(:document) { described_class.new(client: client, name: 'foo', type: 'docx') }
+    subject { document.create_delivery(delivery_options: delivery_options) }
+
+    context 'when a delivery is successfully created' do
+      let(:response) do
+        {
+          "id" => 209142,
+          "type" => "webhook",
+          "url" => "https://example.com/web_merge/callbacks",
+          "file_url" => 1,
+          "json" => 1,
+          "success" => 1
+        }
+      end
+
+      it 'should return success = 1 and the id of the delivery' do
+          expect(subject["id"]).to eq(209142)
+          expect(subject["success"]).to eq(1)
+        end
+    end
+  end
+
+
+  describe '#create_webhook' do
+    let(:client) { double(:client, create_document_delivery: response) }
+    let(:delivery_options) { { "url" => , "file_url" => 1, "json" => 1 } }
+    let(:document) { described_class.new(client: client, name: 'foo', type: 'docx') }
+    subject { document.create_webhook(callback_url: "http://example.com/callbacks", options: delivery_options) }
+
+    context 'when a delivery is successfully created' do
+      let(:response) do
+        {
+          "id" => 209142,
+          "type" => "webhook",
+          "url" => "https://example.com/web_merge/callbacks",
+          "file_url" => 1,
+          "json" => 1,
+          "success" => 1
+        }
+      end
+
+      it 'should return success = 1 and the id of the delivery' do
+          expect(subject["id"]).to eq(209142)
+          expect(subject["success"]).to eq(1)
+        end
     end
   end
 end

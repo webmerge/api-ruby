@@ -87,15 +87,17 @@ module WebMerge
     end
 
     def deliveries
-      @deliveries ||= get_document_deliveries(id)
+      @deliveries ||= @client.get_document_deliveries(id)
     end
 
-    def create_delivery(delivery_options: require(:delivery_options))
+    def create_delivery(delivery_options:)
       response = @client.create_document_delivery(id, delivery_options)
       raise WebMerge::DocumentError.new(response['error']) if response['error'].present?
+      response
     end
 
-    def create_webhook(callback_url: require(:callback_url), options: {})
+    def create_webhook(callback_url:, options: {})
+      # some of the possible options are: { file_url: 1, json: 1}
       create_delivery(delivery_options: { type: "webhook", settings: options.merge(url: callback_url)})
     end
 
