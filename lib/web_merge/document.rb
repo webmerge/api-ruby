@@ -160,9 +160,7 @@ module WebMerge
     end
 
     def merge_notification!(request_params)
-      notification.as_form_data.each_pair do |key, value|
-        request_params.merge!("notification[#{key}]" => value)
-      end
+      request_params.merge!(notification: notification.as_form_data)
     end
 
   end
