@@ -153,7 +153,7 @@ describe WebMerge::Document do
 
   describe '#create_webhook' do
     let(:client) { double(:client, create_document_delivery: response) }
-    let(:delivery_options) { { "url" => , "file_url" => 1, "json" => 1 } }
+    let(:delivery_options) { { "url" => "https://example.com/web_merge/callbacks", "file_url" => 1, "json" => 1 } }
     let(:document) { described_class.new(client: client, name: 'foo', type: 'docx') }
     subject { document.create_webhook(callback_url: "http://example.com/callbacks", options: delivery_options) }
 
