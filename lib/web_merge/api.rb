@@ -39,6 +39,14 @@ module WebMerge
       get("#{WebMerge::Constants::DOCUMENTS}/#{doc_id}/file", &block)
     end
 
+    def get_document_deliveries(doc_id, &block)
+      get("#{WebMerge::Constants::DOCUMENTS}/#{doc_id}/deliveries", &block)
+    end
+
+    def create_document_delivery(doc_id, delivery_options, &block)
+      post("#{WebMerge::Constants::DOCUMENTS}/#{doc_id}/deliveries", delivery_options, &block)
+    end
+
     # doc_id	The Document ID
     #   example: 436346
     # doc_key	The Document Key

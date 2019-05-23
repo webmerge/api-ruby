@@ -9,7 +9,7 @@ module WebMerge
     validates_presence_of :password, if: :requires_password?
     validates :security, inclusion: { in: WebMerge::Constants::SECURITY_LEVELS }
 
-    def initialize(to: required(:to), from: required(:from), subject: "WebMerge Notification", security: WebMerge::Constants::SECURITY_LEVEL_LOW, html: nil, password: nil)
+    def initialize(to:, from:, subject: "WebMerge Notification", security: WebMerge::Constants::SECURITY_LEVEL_LOW, html: nil, password: nil)
       @to = to
       @from = from
       @subject = subject

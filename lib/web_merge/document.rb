@@ -13,7 +13,7 @@ module WebMerge
     validates :type, inclusion: { in: WebMerge::Constants::SUPPORTED_TYPES }
     validates :output, inclusion: { in: WebMerge::Constants::SUPPORTED_OUTPUTS }
 
-    def initialize(client: required(:client), name: required(:name), type: required(:type), output: WebMerge::Constants::PDF, file_path: nil, options: {})
+    def initialize(client:, name:, type:, output: WebMerge::Constants::PDF, file_path: nil, options: {})
       @client = client
       @name = name
       @type = type
@@ -24,7 +24,7 @@ module WebMerge
       @size_height = options[:size_height]
     end
 
-    def self.find(doc_id, client: required(:client))
+    def self.find(doc_id, client:)
       instance = empty_instance(client)
       instance.send(:id=, doc_id)
       instance.reload
@@ -36,7 +36,7 @@ module WebMerge
       end
     end
 
-    def self.all(client: required(:client))
+    def self.all(client:)
       client.get_documents.map do |doc_hash|
         instance = empty_instance(client)
         instance.send(:update_instance, doc_hash)
@@ -46,6 +46,10 @@ module WebMerge
 
     def html?
       type == WebMerge::Constants::HTML
+    end
+
+    def file_path_is_url?
+      file_path.match(/^http[s*]:\/\//)
     end
 
     def new_document?
@@ -80,6 +84,21 @@ module WebMerge
       delete = false
       @client.delete_document(id) { |response| delete = JSON(response.body)["success"] } unless new_document?
       delete
+    end
+
+    def deliveries
+      @deliveries ||= @client.get_document_deliveries(id)
+    end
+
+    def create_delivery(delivery_options:)
+      response = @client.create_document_delivery(id, delivery_options)
+      raise WebMerge::DocumentError.new(response['error']) if response['error'].present?
+      response
+    end
+
+    def create_webhook(callback_url:, options: {})
+      # some of the possible options are: { file_url: 1, json: 1}
+      create_delivery(delivery_options: { type: "webhook", settings: options.merge(url: callback_url)})
     end
 
     def fields
@@ -128,7 +147,9 @@ module WebMerge
     end
 
     def merge_file_contents!(request_params)
-      if html?
+      if file_path_is_url?
+        request_params.merge!(file_url: file_path)
+      elsif html?
         html_string = IO.binread(file_path)
         request_params.merge!(html: html_string)
       else
@@ -139,9 +160,7 @@ module WebMerge
     end
 
     def merge_notification!(request_params)
-      notification.as_form_data.each_pair do |key, value|
-        request_params.merge!("notification[#{key}]" => value)
-      end
+      request_params.merge!(notification: notification.as_form_data)
     end
 
   end
