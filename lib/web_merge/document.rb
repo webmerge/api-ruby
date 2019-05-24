@@ -63,18 +63,18 @@ module WebMerge
       else
         @client.update_document(id, as_form_data)
       end
-      raise WebMerge::DocumentError.new(response['error']) if response['error'].present?
+      raise_error(response['error']) if response['error'].present?
 
       update_instance(response.symbolize_keys)
       true
     end
 
     def save!
-      raise "Document contains errors: #{errors.full_messages.join(", ")}" unless save
+      raise_error("Document contains errors: #{errors.full_messages.join(", ")}") unless save
     end
 
     def reload
-      raise "Cannot reload a new document, perhaps you'd like to call `save' first?" if new_document?
+      raise_error("Cannot reload a new document, perhaps you'd like to call `save' first?") if new_document?
       response = @client.get_document(id)
       update_instance(response)
       self
@@ -102,7 +102,7 @@ module WebMerge
     end
 
     def fields
-      raise "Cannot fetch fields for an unpersisted document, perhaps you'd like to call `save' first?" if new_document?
+      raise_error("Cannot fetch fields for an unpersisted document, perhaps you'd like to call `save' first?")if new_document?
       @fields ||= @client.get_document_fields(id)
     end
 
@@ -111,7 +111,7 @@ module WebMerge
     end
 
     def merge(field_mappings, options = {}, &block)
-      raise "Cannot merge an unpersisted document, perhaps you'd like to call `save' first?" if new_document?
+      raise_error("Cannot merge an unpersisted document, perhaps you'd like to call `save' first?") if new_document?
       @client.merge_document(id, key, field_mappings, options, &block)
     end
 
@@ -163,5 +163,8 @@ module WebMerge
       request_params.merge!(notification: notification.as_form_data)
     end
 
+    def raise_error(message)
+      raise WebMerge::DocumentError.new(message)
+    end
   end
 end
